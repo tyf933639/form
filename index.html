@@ -365,7 +365,23 @@
         });
       }
 
-      function validateProfile(profile) {
+      function calculateAge(birthday, today) {
+        var birthDate = new Date(birthday + "T00:00:00");
+        var referenceDate = today ? new Date(today + "T00:00:00") : new Date();
+        var age = referenceDate.getFullYear() - birthDate.getFullYear();
+        var birthdayPassed =
+          referenceDate.getMonth() > birthDate.getMonth() ||
+          (referenceDate.getMonth() === birthDate.getMonth() && referenceDate.getDate() >= birthDate.getDate());
+
+        if (Number.isNaN(birthDate.getTime()) || Number.isNaN(referenceDate.getTime())) {
+          return null;
+        }
+
+        return birthdayPassed ? age : age - 1;
+      }
+
+      function validateProfile(profile, options) {
+        var settings = options || {};
         var normalized = {
           name: cleanText(profile.name),
           age: Number(profile.age),
@@ -385,6 +401,8 @@
 
         if (!normalized.birthday) {
           errors.birthday = "Birthday is required.";
+        } else if (!errors.age && calculateAge(normalized.birthday, settings.today) !== normalized.age) {
+          errors.age = "Age must match the birthday.";
         }
 
         if (!normalized.occupation) {
