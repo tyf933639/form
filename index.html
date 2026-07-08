@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile Summary</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --ink: #182230;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --accent: #0f766e;
+      --accent-strong: #115e59;
+      --accent-soft: #ccfbf1;
+      --danger: #b42318;
+      --shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(20, 184, 166, 0.18), transparent 30%),
+        radial-gradient(circle at 84% 72%, rgba(245, 158, 11, 0.16), transparent 28%),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .app {
+      width: min(100%, 760px);
+      background: var(--panel);
+      border: 1px solid rgba(219, 227, 239, 0.9);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 28px 32px 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(204, 251, 241, 0.86), rgba(255, 255, 255, 0.95));
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.65rem, 4vw, 2.4rem);
+      line-height: 1.12;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+
+    main {
+      padding: 30px 32px 32px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: #334155;
+      font-size: 0.92rem;
+      font-weight: 650;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 12px 13px;
+      color: var(--ink);
+      background: #ffffff;
+      font: inherit;
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.14);
+    }
+
+    .field-error {
+      min-height: 1.2em;
+      color: var(--danger);
+      font-size: 0.84rem;
+      font-weight: 560;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    button {
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 0 18px;
+      font: inherit;
+      font-weight: 720;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .primary:hover {
+      background: var(--accent-strong);
+    }
+
+    .secondary {
+      background: #ffffff;
+      border-color: #b8c4d6;
+      color: #263445;
+    }
+
+    .secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .summary {
+      display: grid;
+      gap: 22px;
+    }
+
+    .summary h2 {
+      font-size: clamp(1.35rem, 3vw, 1.9rem);
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .summary-intro {
+      color: #334155;
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .facts li,
+    .hobbies li {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      background: #f8fafc;
+      color: #243244;
+      line-height: 1.45;
+    }
+
+    .hobbies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .hobbies li {
+      background: var(--accent-soft);
+      border-color: rgba(15, 118, 110, 0.22);
+      color: #134e4a;
+      font-weight: 680;
+    }
+
+    .section-title {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+        align-items: start;
+      }
+
+      header,
+      main {
+        padding-inline: 20px;
+      }
+
+      .grid,
+      .facts {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Profile Summary</h1>
+      <p>Fill in a few details, then generate a clean summary you can review or edit.</p>
+    </header>
+
+    <main>
+      <section class="view active" id="formView" aria-labelledby="formTitle">
+        <h2 id="formTitle" class="section-title">Your Details</h2>
+        <form id="profileForm" novalidate>
+          <div class="grid">
+            <label>
+              Name
+              <input id="name" name="name" type="text" autocomplete="name" placeholder="Ada Lovelace">
+              <span class="field-error" data-error-for="name"></span>
+            </label>
+
+            <label>
+              Age
+              <input id="age" name="age" type="number" min="1" max="120" placeholder="28">
+              <span class="field-error" data-error-for="age"></span>
+            </label>
+          </div>
+
+          <div class="grid">
+            <label>
+              Birthday
+              <input id="birthday" name="birthday" type="date">
+              <span class="field-error" data-error-for="birthday"></span>
+            </label>
+
+            <label>
+              Occupation
+              <input id="occupation" name="occupation" type="text" autocomplete="organization-title" placeholder="Engineer">
+              <span class="field-error" data-error-for="occupation"></span>
+            </label>
+          </div>
+
+          <label>
+            Hobbies
+            <textarea id="hobbies" name="hobbies" placeholder="reading, music, hiking"></textarea>
+            <span class="field-error" data-error-for="hobbies"></span>
+          </label>
+
+          <div class="actions">
+            <button class="primary" type="submit">Generate Summary</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="view" id="summaryView" aria-labelledby="summaryTitle">
+        <div class="summary">
+          <div>
+            <p class="section-title">Generated Summary</p>
+            <h2 id="summaryTitle">Here is your profile</h2>
+          </div>
+
+          <p class="summary-intro" id="summaryIntro"></p>
+
+          <div>
+            <p class="section-title">Details</p>
+            <ul class="facts" id="summaryFacts"></ul>
+          </div>
+
+          <div>
+            <p class="section-title">Hobbies</p>
+            <ul class="hobbies" id="summaryHobbies"></ul>
+          </div>
+
+          <div class="actions">
+            <button class="secondary" type="button" id="editButton">Back to Edit</button>
+            <button class="primary" type="button" id="resetButton">Start Over</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script id="app-logic" type="text/plain">
+    (function (root) {
+      function cleanText(value) {
+        return String(value || "").trim();
+      }
+
+      function parseHobbies(value) {
+        return cleanText(value)
+          .split(",")
+          .map(function (hobby) { return hobby.trim(); })
+          .filter(Boolean);
+      }
+
+      function formatBirthday(value) {
+        var date = new Date(value + "T00:00:00");
+
+        if (Number.isNaN(date.getTime())) {
+          return value;
+        }
+
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      }
+
+      function validateProfile(profile) {
+        var normalized = {
+          name: cleanText(profile.name),
+          age: Number(profile.age),
+          birthday: cleanText(profile.birthday),
+          occupation: cleanText(profile.occupation),
+          hobbies: parseHobbies(profile.hobbies)
+        };
+        var errors = {};
+
+        if (!normalized.name) {
+          errors.name = "Name is required.";
+        }
+
+        if (!Number.isInteger(normalized.age) || normalized.age < 1 || normalized.age > 120) {
+          errors.age = "Please enter an age between 1 and 120.";
+        }
+
+        if (!normalized.birthday) {
+          errors.birthday = "Birthday is required.";
+        }
+
+        if (!normalized.occupation) {
+          errors.occupation = "Occupation is required.";
+        }
+
+        if (normalized.hobbies.length === 0) {
+          errors.hobbies = "Add at least one hobby.";
+        }
+
+        return {
+          valid: Object.keys(errors).length === 0,
+          errors: errors,
+          normalized: normalized
+        };
+      }
+
+      function buildSummary(profile) {
+        return {
+          intro: profile.name + " is a " + profile.age + "-year-old " + profile.occupation + ".",
+          facts: [
+            "Birthday: " + formatBirthday(profile.birthday),
+            "Occupation: " + profile.occupation,
+            "Age: " + profile.age
+          ],
+          hobbies: profile.hobbies.slice()
+        };
+      }
+
+      root.ProfileSummaryApp = {
+        validateProfile: validateProfile,
+        buildSummary: buildSummary
+      };
+    })(typeof window === "undefined" ? globalThis : window);
+  </script>
+
+  <script>
+    eval(document.getElementById("app-logic").textContent);
+
+    var form = document.getElementById("profileForm");
+    var formView = document.getElementById("formView");
+    var summaryView = document.getElementById("summaryView");
+    var fields = ["name", "age", "birthday", "occupation", "hobbies"];
+
+    function getProfileFromForm() {
+      return fields.reduce(function (profile, field) {
+        profile[field] = document.getElementById(field).value;
+        return profile;
+      }, {});
+    }
+
+    function setErrors(errors) {
+      fields.forEach(function (field) {
+        document.querySelector('[data-error-for="' + field + '"]').textContent = errors[field] || "";
+      });
+    }
+
+    function switchView(nextView) {
+      formView.classList.toggle("active", nextView === "form");
+      summaryView.classList.toggle("active", nextView === "summary");
+    }
+
+    function fillList(list, items) {
+      list.innerHTML = "";
+
+      items.forEach(function (item) {
+        var node = document.createElement("li");
+        node.textContent = item;
+        list.appendChild(node);
+      });
+    }
+
+    function renderSummary(profile) {
+      var summary = window.ProfileSummaryApp.buildSummary(profile);
+
+      document.getElementById("summaryIntro").textContent = summary.intro;
+      fillList(document.getElementById("summaryFacts"), summary.facts);
+      fillList(document.getElementById("summaryHobbies"), summary.hobbies);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var result = window.ProfileSummaryApp.validateProfile(getProfileFromForm());
+      setErrors(result.errors);
+
+      if (!result.valid) {
+        return;
+      }
+
+      renderSummary(result.normalized);
+      switchView("summary");
+    });
+
+    document.getElementById("editButton").addEventListener("click", function () {
+      switchView("form");
+    });
+
+    document.getElementById("resetButton").addEventListener("click", function () {
+      form.reset();
+      setErrors({});
+      switchView("form");
+      document.getElementById("name").focus();
+    });
+  </script>
+</body>
+</html>
